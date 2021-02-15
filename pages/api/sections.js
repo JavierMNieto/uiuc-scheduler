@@ -14,6 +14,5 @@ export default (req, res) => {
 
   // Check for valid course, year, and term
 
-  res.statusCode = 200;
-  res.json(Sections[course][year][term]);
+  res.status(200).json(Sections[course][year][term]);
 };

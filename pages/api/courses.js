@@ -3,7 +3,7 @@ import path from "path";
 import zlib from "zlib";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import sortedIndexOf from "lodash/sortedIndexOf";
-import memoize from "lodash/memoize";
+//import memoize from "lodash/memoize";
 import { matchSorter } from "match-sorter";
 
 //import FilterCoursesArr from "../../data/filter_courses.json";
@@ -28,9 +28,9 @@ FilterCoursesArr.sort((a, b) =>
   `${a.subject} ${a.number}`.localeCompare(`${b.subject} ${b.number}`)
 );
 
-const keyResolver = (...args) => JSON.stringify(args);
+//const keyResolver = (...args) => JSON.stringify(args);
 
-const filterCourses = memoize((genEdsBy, filters) => {
+const filterCourses = (genEdsBy, filters) => {
   return sortedUniqBy(
     FilterCoursesArr.filter((course) => {
       for (const [filter, values] of Object.entries(filters)) {
@@ -57,7 +57,7 @@ const filterCourses = memoize((genEdsBy, filters) => {
     }),
     (course) => `${course.subject} ${course.number}`
   ).map((course) => CoursesInfoMap[`${course.subject} ${course.number}`]);
-}, keyResolver);
+};
 
 const searchCourses = (search, genEdsBy, filters) => {
   search = search.trim();
@@ -89,9 +89,7 @@ export default (req, res) => {
   }
 
   const courses = searchCourses(search, genEdsBy, filters);
-
-  res.statusCode = 200;
-  res.json(courses.slice(startIndex, endIndex));
+  res.status(200).json(courses.slice(startIndex, endIndex));
   /*
   if (req.query["initial"]) {
     res.json({
