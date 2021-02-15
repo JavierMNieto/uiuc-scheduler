@@ -98,12 +98,12 @@ export default function Course({ onDelete, ...courseProps }) {
   const handleInfoModalClose = () => {
     setInfoModalOpen(false);
   };
-  
+
   const getDeleteFunction = React.useCallback(() => {
     if (isFutureSemester(selectedSemester)) {
       return console.log;
     }
-  }, [selectedSemester])
+  }, [selectedSemester]);
 
   return (
     <Card
@@ -158,21 +158,23 @@ export default function Course({ onDelete, ...courseProps }) {
           {name}
         </Typography>
         <Grid container spacing={1} justify="center" align="center">
-          {genEds.map((genEd, index) => (
-            <Grid item key={genEd}>
-              <OverflowTipChip
-                label={GenEds[genEd]}
-                className={classes.GenEd}
-                style={{
-                  maxWidth:
-                    index + 1 < genEds.length || genEds.length % 2 === 0
-                      ? 0.35 * DRAWER_WIDTH
-                      : 0.8 * DRAWER_WIDTH,
-                }}
-                size="small"
-              />
-            </Grid>
-          ))}
+          {genEds
+            .filter((genEd) => Boolean(GenEds[genEd]))
+            .map((genEd, index) => (
+              <Grid item key={genEd}>
+                <OverflowTipChip
+                  label={GenEds[genEd]}
+                  className={classes.GenEd}
+                  style={{
+                    maxWidth:
+                      index + 1 < genEds.length || genEds.length % 2 === 0
+                        ? 0.35 * DRAWER_WIDTH
+                        : 0.8 * DRAWER_WIDTH,
+                  }}
+                  size="small"
+                />
+              </Grid>
+            ))}
         </Grid>
       </CardContent>
       <CardActions>
