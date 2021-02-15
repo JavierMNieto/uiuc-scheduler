@@ -1,0 +1,14 @@
+{
+    "2021": ["Winter", "Spring"],
+    "2020": ["Winter", "Spring", "Summer", "Fall"],
+    "2019": ["Winter", "Spring", "Summer", "Fall"],
+    "2018": ["Winter", "Spring", "Summer", "Fall"],
+    "2017": ["Winter", "Spring", "Summer", "Fall"],
+    "2016": ["Winter", "Spring", "Summer", "Fall"],
+    "2015": ["Winter", "Spring", "Summer", "Fall"],
+    "2014": ["Spring", "Summer", "Fall"],
+    "2013": ["Spring", "Summer", "Fall"],
+    "2012": ["Spring", "Summer", "Fall"],
+    "2011": ["Spring", "Summer", "Fall"],
+    "2010": ["Spring", "Summer", "Fall"]
+}

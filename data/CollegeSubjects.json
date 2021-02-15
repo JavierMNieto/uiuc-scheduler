@@ -1,0 +1,20 @@
+{
+    "KL": ["ACE", "ANSC", "HDFS", "LEAD", "ABE", "ACES", "AGCM", "AGED", "ALEC", "CPSC", "FSHN", "HORT", "MFST", "NRES", "NUTR", "PLPA", "TSM", "RSOC", "HDES"],
+    "KT": ["ADV", "JOUR", "MACS", "MDIA", "SBC", "AGCM", "MS"],
+    "LD": ["AFAS", "MILS", "NS"],
+    "KR": ["ART", "DANC", "MUS", "THEA", "ARCH", "ARTD", "ARTE", "ARTF", "ARTH", "ARTS", "FAA", "LA", "MUSC", "UP"],
+    "KV": ["ASTR", "ATMS", "CLCV", "CMN", "ECON", "ENGL", "ESE", "GEOG", "GEOL", "GLBL", "GWS", "PHIL", "PS", "PSYC", "REL", "SOC", "SPAN", "AAS", "AFRO", "AFST", "AIS", "ANTH", "ARAB", "ASRM", "ASST", "BCOG", "BCS", "BIOC", "BIOP", "BTW", "CDB", "CHBE", "CHEM", "CHIN", "CHP", "CW", "CWL", "CZCH", "EALC", "EIL", "ENSU", "ENVS", "ESL", "EURO", "FLTE", "FR", "GER", "GRK", "GRKM", "HIST", "HNDI", "HUM", "IB", "ITAL", "JAPN", "JS", "KOR", "LAS", "LAST", "LAT", "LCTL", "LING", "LLS", "MATH", "MCB", "MDVL", "MICR", "MIP", "MUSE", "NEUR", "PBIO", "PERS", "POL", "PORT", "REES", "RHET", "RMLG", "RUSS", "SAME", "SCAN", "SLAV", "SLS", "STAT", "SWAH", "TRST", "TURK", "UKR", "WLOF", "WRIT", "BASQ", "HEBR", "YDSH", "SLCL", "CATL", "RLST", "ZULU", "HCD", "SNSK", "SCR", "BULG", "ENT", "BMNA", "CINE", "ESES", "LGLA"],
+    "KM": ["BADM", "ACCY", "BDI", "BUS", "FIN", "MBA"],
+    "KY": ["CHLH", "REHB", "RST", "AHS", "HT", "IHLT", "KIN", "SHS"],
+    "LP": ["IS", "INFO", "LIS"],
+    "KN": ["SPED", "CI", "EDPR", "EDUC", "EOL", "EPOL", "EPS", "EPSY", "HRD", "HRE"],
+    "KP": ["AE", "BIOE", "CEE", "CS", "CSE", "ECE", "ENG", "IE", "ME", "MSE", "NPRE", "PHYS", "SE", "TAM", "TE", "TMGT", "ENGH", "GE"],
+    "LC": ["CB", "PATH", "VCM", "VM", "VB"],
+    "KS": ["CIC", "GC", "PSM", "CAS"],
+    "KW": ["GS"],
+    "KU": ["LAW"],
+    "LG": ["LER"],
+    "LL": ["SOCW", "WGGP"],
+    "LM": ["GCL", "INFO"],
+    "LK": ["ENVS"]
+}
