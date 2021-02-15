@@ -8,7 +8,7 @@ import { matchSorter } from "match-sorter";
 //import FilterCoursesArr from "../../data/filter_courses.json";
 import CoursesInfoMap from "../../data/courses_info.json";
 
-const FilterCoursesArr = JSON.parse(zlib.gunzipSync(fs.readFileSync("data/filter_courses.json.gz")));
+const FilterCoursesArr = JSON.parse(zlib.gunzipSync(fs.readFileSync("../../data/filter_courses.json.gz")));
 
 const defaultFilters = {
   year: [],
