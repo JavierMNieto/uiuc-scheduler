@@ -1,10 +1,10 @@
 {
   "functions": {
-    "api/courses.js": {
+    "pages/api/courses.js": {
       "memory": 3008,
       "maxDuration": 10
     },
-    "api/sections.js": {
+    "pages/api/sections.js": {
       "memory": 3008,
       "maxDuration": 10
     }
