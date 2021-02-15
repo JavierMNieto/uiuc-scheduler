@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "api/courses.js": {
+      "memory": 3008,
+      "maxDuration": 10
+    },
+    "api/sections.js": {
+      "memory": 3008,
+      "maxDuration": 10
+    }
+  }
+}
