@@ -90,14 +90,4 @@ export default (req, res) => {
 
   const courses = searchCourses(search, genEdsBy, filters);
   res.status(200).json(courses.slice(startIndex, endIndex));
-  /*
-  if (req.query["initial"]) {
-    res.json({
-      total: courses.length,
-      courses: courses.slice(startIndex, endIndex),
-    });
-  } else {
-    res.json(courses.slice(startIndex, endIndex));
-  }
-  */
 };
