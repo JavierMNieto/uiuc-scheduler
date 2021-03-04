@@ -1,4 +1,21 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+UIUC (University of Illinois at Urbana-Champaign) Scheduler is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Features
+* Easily filter UIUC courses
+* Build course schedules
+* More to come
+
+## Libraries Used
+* [Devextreme-Reactive](https://github.com/DevExpress/devextreme-reactive)
+* [Match Sorter](https://github.com/kentcdodds/match-sorter)
+* [Material UI](https://github.com/mui-org/material-ui)
+* [React Query](https://github.com/tannerlinsley/react-query)
+* [Axios](https://github.com/axios/axios)
+* [React Window](https://github.com/bvaughn/react-window)
+* [React Window Infinite Loader](https://github.com/bvaughn/react-window-infinite-loader)
+* [React Device Detect](https://github.com/duskload/react-device-detect#readme)
+* [React Colorful](https://github.com/omgovich/react-colorful)
+* [Use Dark Mode](https://github.com/donavon/use-dark-mode)
 
 ## Getting Started
 
@@ -11,12 +28,6 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
 ## Learn More
 
