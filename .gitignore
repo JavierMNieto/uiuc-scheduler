@@ -36,3 +36,4 @@ yarn-error.log*
 # data > 100MB
 /data/sections.json
 /data/filter_courses.json
+package-lock.json
