@@ -1,210 +1,214 @@
-name,ID
-Agricultural and Consumer Economics,ACE
-Charles H. Sandage Department of Advertising,ADV
-Air Force Aerospace Studies,AFAS
-Animal Sciences,ANSC
-"Art and Design, School of",ART
-Astronomy,ASTR
-Atmospheric Sciences,ATMS
-Business Administration,BADM
-Kinesiology & Community Health,CHLH
-Classics,CLCV
-Communication,CMN
-Dance,DANC
-Economics,ECON
-English,ENGL
-"School of Earth, Society, and Environment",ESE
-Geography & Geographic Information Science,GEOG
-Geology,GEOL
-(LAS) Global Studies Program,GLBL
-Gender and Women's Studies,GWS
-Human Development and Family Studies,HDFS
-School of Information Sciences,IS
-Journalism,JOUR
-"Agricultural Leadership, Education & Communications",LEAD
-Media and Cinema Studies,MACS
-Military Science,MILS
-Music,MUS
-Naval Science,NS
-Philosophy,PHIL
-Political Science,PS
-Psychology,PSYC
-Kinesiology & Community Health,REHB
-Department of Religion,REL
-"Recreation, Sport and Tourism",RST
-Sociology,SOC
-Spanish and Portuguese,SPAN
-Special Education,SPED
-Theatre,THEA
-Asian American Studies,AAS
-Agricultural and Biological Engineering,ABE
-Accountancy,ACCY
-"Agricultural, Consumer and Environmental Sciences",ACES
-Aerospace Engineering,AE
-African American Studies,AFRO
-"African Studies, Center for",AFST
-"Agricultural Leadership, Education & Communications",AGED
-Applied Health Sciences Courses,AHS
-Agricultural Education Program,ALEC
-Anthropology,ANTH
-Linguistics,ARAB
-"Architecture, School of",ARCH
-"Art and Design, School of",ARTD
-"Art and Design, School of",ARTE
-"Art and Design, School of",ARTF
-"Art and Design, School of",ARTH
-"Art and Design, School of",ARTS
-Mathematics,ASRM
-East Asian Languages and Cultures,ASST
-Biochemistry,BIOC
-Bioengineering,BIOE
-"Integrative Biology, School of",BIOL
-"Biophysics and Quantitative Biology, Center for",BIOP
-Carle Illinois College of Medicine,BSE
-English,BTW
-Business,BUS
-Comparative Biosciences,CB
-Cell & Developmental Biology,CDB
-Civil and Environmental Engineering,CEE
-Chemical and Biomolecular Engineering,CHBE
-Chemistry,CHEM
-East Asian Languages and Cultures,CHIN
-Curriculum and Instruction,CI
-Graduate College,CIC
-Carle Illinois College of Medicine,CLE
-Crop Sciences,CPSC
-Computer Science,CS
-Computational Science and Engineering,CSE
-English,CW
-Comparative and World Literature,CWL
-Slavic Languages and Literature,CZCH
-East Asian Languages and Cultures,EALC
-Electrical and Computer Engineering,ECE
-Council on Teacher Education,EDPR
-Linguistics,EIL
-Engineering,ENG
-Engineering Honors,ENGH
-Entomology,ENT
-"School of Earth, Society, and Environment",ENVS
-Educational Organization and Leadership,EOL
-"Educ Policy, Orgzn & Leadrshp",EPOL
-Educational Policy Studies,EPS
-Educational Psychology,EPSY
-Linguistics,ESL
-European Union Center,EURO
-Fine and Applied Arts,FAA
-Finance,FIN
-French and Italian,FR
-Food Science and Human Nutrition,FSHN
-Graduate College,GC
-Germanic Languages and Literatures,GER
-Germanic Languages and Literatures,GMC
-Classics,GRK
-Division of General Studies,GS
-Jewish Culture and Society,HEBR
-History,HIST
-Linguistics,HNDI
-Crop Sciences,HORT
-"Education Policy, Organization and Leadership",HRD
-Liberal Arts and Sciences,HUM
-"Integrative Biology, School of",IB
-Industrial and Enterprise Systems Engineering,IE
-Interdisciplinary Health Sciences,IHLT
-Illinois Informatics Institute (I3),INFO
-French and Italian,ITAL
-East Asian Languages and Cultures,JAPN
-Jewish Culture and Society,JS
-Kinesiology & Community Health,KIN
-East Asian Languages and Cultures,KOR
-Landscape Architecture,LA
-Liberal Arts and Sciences,LAS
-Latin American and Caribbean Studies,LAST
-Classics,LAT
-Law,LAW
-Labor and Employment Relations,LER
-Linguistics,LING
-Latina/Latino Studies,LLS
-Mathematics,MATH
-MBA Program Administration,MBA
-"Molecular and Cellular Biology, School of",MCB
-College of Media,MDIA
-Mechanical Science and Engineering,ME
-Microbiology,MICR
-Molecular and Integrative Physiology,MIP
-Materials Science and Engineering,MSE
-Museum Studies,MUSE
-"Neuroscience, Program in",NEUR
-"Nuclear, Plasma, and Radiological Engineering",NPRE
-Natural Resources and Environmental Sciences,NRES
-Nutritional Sciences,NUTR
-Pathobiology,PATH
-Plant Biology,PBIO
-Linguistics,PERS
-Physics,PHYS
-Crop Sciences,PLPA
-Slavic Languages and Literature,POL
-Spanish and Portuguese,PORT
-Graduate College,PSM
-"Russian, East European, and Eurasian Center",REES
-English,RHET
-Slavic Languages and Literature,RUSS
-College of Media Programs,SBC
-Germanic Languages and Literatures,SCAN
-Industrial and Enterprise Systems Engineering,SE
-Speech and Hearing Science,SHS
-Slavic Languages and Literature,SLAV
-Second Language Acquisition and Teacher Education (SLATE),SLS
-"Social Work, School of",SOCW
-Statistics,STAT
-Linguistics,SWAH
-Mechanical Science and Engineering,TAM
-Technology Entrepreneurship,TE
-Agricultural and Biological Engineering,TSM
-Linguistics,TURK
-Slavic Languages and Literature,UKR
-Urban and Regional Planning,UP
-Veterinary Clinical Medicine,VCM
-Veterinary Medicine,VM
-Center for Writing Studies,WRIT
-College of Aces,AGCM
-Agricultural Education Program,AGED
-"Teacher Education, Council on",EDPR
-College of Education,EDUC
-Germanic,GMC
-LAS Global Studies Program,GLBL
-College of Media,AGCM
-Environmental Sustainability,ENSU
-Industrial and Enterprise Systems Engineering,GE
-Human Resource Education,HRE
-School of Information Sciences,LIS
-"Medieval Studies, Program in",MDVL
-Religion,RLST
-Translation Studies,TRST
-Linguistics,WLOF
-American Indian Studies,AIS
-Human and Community Development,HCD
-Human and Community Development,HDFS
-"Biophysics and Computational Biology, Center for",BIOP
-Jewish Culture and Society ,HEBR
-Jewish Culture and Society ,JS
-"Library and Information Science, Graduate School of ",LIS
-"Aviation, Institute of",AVI
-French,FR
-Germanic ,GMC
-"Spanish, Italian and Portuguese",ITAL
-"Spanish, Italian and Portuguese",PORT
-Slavic Languages and Literature,SCR
-"Spanish, Italian and Portuguese",SPAN
-Advertising,ADV
-Human and Community Development,AGCM
-Human and Community Development,AGED
-Asian American Studies Program,AAS
-International Programs and Studies,GLBL
-Geography,GEOG
-x,MACS
-College of Media,CINE
-"School of Earth, Society, and Environment",ESES
-Gender and Women's Studies Program,GWS
-"Religion, Program for the Study of",HEBR
-College of Media,MS
-Veterinary Biosciences,VB
+subjectId,name
+AAS,Asian American Studies
+ABE,Agricultural and Biological Engineering
+ACCY,Accountancy
+ACE,Agricultural and Consumer Economics
+ACES,"Agricultural, Consumer and Environmental Sciences"
+ADV,Advertising
+AE,Aerospace Engineering
+AFAS,Air Force Aerospace Studies
+AFRO,African American Studies
+AFST,African Studies
+AGCM,Agricultural Communications
+AGED,Agricultural Education
+AHS,Applied Health Sciences Courses
+AIS,American Indian Studies
+ALEC,"Agricultural Leadership, Education, and Communications Program"
+ANSC,Animal Sciences
+ANTH,Anthropology
+ARAB,Arabic
+ARCH,Architecture
+ART,Art
+ARTD,Art--Design
+ARTE,Art--Education
+ARTF,Art--Foundation
+ARTH,Art--History
+ARTS,Art--Studio
+ASRM,Actuarial Science and Risk Management
+ASST,Asian Studies
+ASTR,Astronomy
+ATMS,Atmospheric Sciences
+BADM,Business Administration
+BASQ,Basque
+BCOG,Brain and Cognitive Science
+BCS,Bosnian-Croatian-Serbian
+BDI,Business Data and Innovation
+BIOC,Biochemistry
+BIOE,Bioengineering
+BIOL,Biology
+BIOP,Biophysics
+BSE,Biomedical Sciences and Engineering
+BTW,Business and Technical Writing
+BUS,Business
+CB,Comparative Biosciences
+CDB,Cell and Developmental Biology
+CEE,Civil and Environmental Engineering
+CHBE,Chemical and Biomolecular Engineering
+CHEM,Chemistry
+CHIN,Chinese
+CHLH,Community Health
+CHP,Campus Honors Program Courses
+CI,Curriculum and Instruction
+CIC,Committee on Inst Cooperation
+CLCV,Classical Civilization
+CLE,Clinical Sciences and Engineering
+CMN,Communication
+CPSC,Crop Sciences
+CS,Computer Science
+CSE,Computational Science and Engineering
+CW,Creative Writing
+CWL,Comparative and World Literature
+CZCH,Czech
+DANC,Dance
+EALC,East Asian Language and Culture
+ECE,Electrical and Computer Engineering
+ECON,Economics
+EDPR,Educational Practice
+EDUC,Education
+EIL,English as an International Language
+ENG,Engineering
+ENGH,Engineering Honors
+ENGL,English
+ENSU,Environmental Sustainability
+ENT,Entomology
+ENVS,Environmental Studies
+EOL,Educational Organization and Leadership
+EPOL,"Education Policy, Organization and Leadership"
+EPS,Educational Policy Studies
+EPSY,Educational Psychology
+ESE,"Earth, Society, and Environment"
+ESL,English as a Second Language
+EURO,European Union Studies
+FAA,Fine and Applied Arts
+FIN,Finance
+FLTE,Foreign Language Teacher Education
+FR,French
+FSHN,Food Science and Human Nutrition
+GC,Graduate College
+GEOG,Geography
+GEOL,Geology
+GER,German
+GLBL,Global Studies
+GMC,Germanic
+GRK,Greek
+GRKM,Modern Greek
+GS,General Studies
+GWS,Gender and Women's Studies
+HDFS,Human Development and Family Studies
+HEBR,"Hebrew, Modern and Classical"
+HIST,History
+HNDI,Hindi
+HORT,Horticulture
+HRD,Human Resource Development
+HT,Health Technology
+HUM,Humanities Courses
+IB,Integrative Biology
+IE,Industrial Engineering
+IHLT,Interdisciplinary Health Sciences
+INFO,Informatics
+IS,Information Sciences
+ITAL,Italian
+JAPN,Japanese
+JOUR,Journalism
+JS,Jewish Studies
+KIN,Kinesiology
+KOR,Korean
+LA,Landscape Architecture
+LAS,Liberal Arts and Sciences
+LAST,Latin American and Caribbean Studies
+LAT,Latin
+LAW,Law
+LCTL,Less Commonly Taught Languages
+LEAD,Organizational and Community Leadership
+LER,Labor and Employment Relations
+LING,Linguistics
+LLS,Latina/Latino Studies
+MACS,Media and Cinema Studies
+MATH,Mathematics
+MBA,Regular MBA Program Administration
+MCB,Molecular and Cell Biology
+MDIA,Media
+MDVL,Medieval Studies
+ME,Mechanical Engineering
+MFST,Metropolitan Food and Environmental Systems
+MICR,Microbiology
+MILS,Military Science
+MIP,Molecular and Integrative Physiology
+MSE,Materials Science and Engineering
+MUS,Music
+MUSC,Music Lessons and Ensembles
+MUSE,Museum Studies
+NEUR,Neuroscience
+NPRE,"Nuclear, Plasma, and Radiological Engineering"
+NRES,Natural Resources and Environmental Sciences
+NS,Naval Science
+NUTR,Nutritional Sciences
+PATH,Pathobiology
+PBIO,Plant Biology
+PERS,Persian
+PHIL,Philosophy
+PHYS,Physics
+PLPA,Plant Pathology
+POL,Polish
+PORT,Portuguese
+PS,Political Science
+PSM,Professional Science Master's Program
+PSYC,Psychology
+REES,"Russian, East European and Eurasian Studies"
+REHB,Rehabilitation Counseling
+REL,Religion
+RHET,Rhetoric and Composition
+RMLG,Romance Linguistics
+RST,"Recreation, Sport, and Tourism"
+RUSS,Russian
+SAME,South Asian and Middle Eastern Studies
+SBC,Strategic Brand Communication
+SCAN,Scandinavian
+SE,Systems Engineering and Design
+SHS,Speech and Hearing Science
+SLAV,Slavic
+SLS,Second Language Studies
+SOC,Sociology
+SOCW,Social Work
+SPAN,Spanish
+SPED,Special Education
+STAT,Statistics
+SWAH,Swahili
+TAM,Theoretical and Applied Mechanics
+TE,Technology Entrepreneurship
+THEA,Theatre
+TMGT,Technology and Management Courses
+TRST,Translation Studies
+TSM,Technical Systems Management
+TURK,Turkish
+UKR,Ukrainian
+UP,Urban and Regional Planning
+VCM,Veterinary Clinical Medicine
+VM,Veterinary Medicine Courses
+WGGP,Women and Gender in Global Perspectives Program
+WLOF,Wolof
+WRIT,Writing Studies
+YDSH,Yiddish
+RSOC,Rural Sociology
+CAS,Center for Advanced Study
+GCL,Grand Challenge Learning
+ZULU,Zulu
+SLCL,"Literatures, Cultures, and Linguistics"
+CATL,Catalan
+IHLT,i-Health Program
+GE,General Engineering
+HRE,Human Resource Education
+LIS,Library and Information Science
+RLST,Religious Studies
+HCD,Human and Community Development
+HDES,Human Dimensions of Environmental Systems
+SNSK,Sanskrit
+AVI,Aviation
+SCR,Serbo-Croatian
+BULG,Bulgarian
+BMNA,Bamana
+CINE,Cinema Studies
+MS,Media Studies
+ESES,"ZZZ Earth Sys, Environ & Socie"
+LGLA,Lingala
+VB,Veterinary Biosciences
