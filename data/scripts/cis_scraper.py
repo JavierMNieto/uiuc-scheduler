@@ -71,13 +71,14 @@ def text_or_none(xml, find, pattern=None, attrib=None):
         return text or None
     return None
 
-# ---------------------- Get Semester Data -----------------------------
-
 def build_url(*args):
     url = "https://courses.illinois.edu/cisapp/explorer/schedule"
     for arg in args:
         url += "/" + str(arg)
-    return url + ".xml"            
+    return url + ".xml"   
+
+# ---------------------- Get Semester Data -----------------------------
+         
 
 def write_semester_csv(year, term):
     row = {
@@ -97,7 +98,7 @@ def write_semester_csv(year, term):
         subject_info = ET.parse(url_open(url))
 
         row["college"] = text_or_none(subject_info, "collegeCode")
-        row["subject_name"] = text_or_none(subject_info, "unitName")
+        row["subject_name"] = text_or_none(subject_info, "label")
 
         print("Getting {} {} {}...".format(row["year"], row["term"], row["subject"]))
         for course in subject_info.iter("course"):
