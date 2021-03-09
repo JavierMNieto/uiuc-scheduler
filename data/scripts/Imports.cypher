@@ -91,6 +91,7 @@ ON CREATE
                   `D-`: toInteger(props.`D-`),
                   `F`: toInteger(props.`F`)}
 <<<<<<< HEAD
+<<<<<<< HEAD
 CREATE (meeting:Meeting {startDate: props.startDate, 
                         endDate: props.endDate, 
                         startTime: props.startTime, 
@@ -100,6 +101,8 @@ CREATE (meeting:Meeting {startDate: props.startDate,
                         name: props.name})
 CREATE (section)-[:HAS_MEETING]->(meeting)
 =======
+=======
+>>>>>>> 8817a7940b340a19b00d25e011cca03ad83c79ab
 MERGE (meeting:Meeting {})
 ON CREATE 
   CREATE (section)-[:HAS_MEETING]->(meeting)
