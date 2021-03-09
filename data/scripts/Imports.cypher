@@ -1,4 +1,5 @@
-// Initial import of catalog data into Neo4j
+// Initial import of catalog data into Neo4j.
+// Run these queries in order from top to bottom.
 
 // -------- Nodes -------- //
 
@@ -18,12 +19,6 @@ LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-sch
 CREATE (course:Course)
 SET course += courseProperties
 SET course.number = toInteger(course.number)
-
-// Instructors
-:auto USING PERIODIC COMMIT 1000
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/instructor_nodes.csv" as instructorProperties
-CREATE (instructor:Instructor)
-SET instructor += instructorProperties
 
 // Gen Eds
 LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/gen_ed_nodes.csv" as genEdProperties
@@ -52,17 +47,20 @@ SET section.`D` = toInteger(section.`D`)
 SET section.`D-` = toInteger(section.`D-`)
 SET section.`F` = toInteger(section.`F`)
 
-CREATE INDEX FOR (college:College) ON (college.collegeId)
-CREATE INDEX FOR (subject:Subject) ON (subject.subjectId)
-CREATE INDEX FOR (course:Course) ON (course.courseId)
-CREATE INDEX FOR (section:Section) ON (section.crn, section.year, section.term)
+// Create Indexes
+CREATE INDEX FOR (college:College) ON (college.collegeId);
+CREATE INDEX FOR (subject:Subject) ON (subject.subjectId);
+CREATE INDEX FOR (course:Course) ON (course.courseId);
+CREATE INDEX FOR (genEd:GenEd) ON (genEd.genEdId);
+CREATE INDEX FOR (section:Section) ON (section.crn, section.year, section.term);
 
-// Sections/Meetings
+// Meetings/Instructors/Buildings
 :auto USING PERIODIC COMMIT 100
 LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/meeting_nodes.csv" as props
 MATCH (section:Section {crn: toInteger(props.crn),
                         year: toInteger(props.year), 
                         term: props.term})
+WITH props, section
 CREATE (meeting:Meeting {startDate: props.startDate, 
                         endDate: props.endDate, 
                         startTime: props.startTime, 
@@ -71,13 +69,21 @@ CREATE (meeting:Meeting {startDate: props.startDate,
                         meeting: props.meeting,
                         name: props.name,
                         days: props.days})
-UNWIND split(row.instructor, ':') AS instructor
-MERGE (instructor:Instructor {name: instructor})
-CREATE (instructor)-[:TEACHES]->(meeting)
 CREATE (section)-[:HAS_MEETING]->(meeting)
+WITH props, meeting
+UNWIND split(props.instructor, ':') AS instructorName
+MERGE (instructor:Instructor {name: instructorName})
+CREATE (instructor)-[:TEACHES]->(meeting)
+WITH props, meeting
 WHERE props.building IS NOT NULL
 MERGE (building:Building {name: props.building})
-CREATE (meeting)-[:LOCATED_IN {room: props.room}]->(building)
+MERGE (meeting)-[located:LOCATED_IN]->(building)
+ON CREATE
+  SET located.room = props.room
+
+// Create More Indexes
+CREATE INDEX FOR (instructor:Instructor) ON (instructor.name);
+CREATE INDEX FOR (building:Building) ON (building.name);
 
 // -------- Relationships -------- //
 
@@ -99,15 +105,7 @@ CREATE (subject)-[:HAS_COURSE]->(course)
 LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/relationships/courses_to_sections.csv" as courseSections
 MATCH (course:Course {courseId: courseSections.courseId})
 MATCH (section:Section {crn: toInteger(courseSections.crn), year: toInteger(courseSections.year), term: courseSections.term})
-//MATCH (section:Section {sectionId: courseSections.sectionId})
 CREATE (course)-[:HAS_SECTION]->(section)
-
-// Instructor -> Meeting
-:auto USING PERIODIC COMMIT 100
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/relationships/instructors_to_meetings.csv" as instructorMeetings
-MATCH (instructor:Instructor {name: instructorMeetings.instructor})
-MATCH (:Section {crn: toInteger(instructorMeetings.crn), year: toInteger(instructorMeetings.year), term: instructorMeetings.term, partOfTerm: instructorMeetings.partOfTerm})-[:HAS_SECTION]->(meeting:Meeting {typeId: instructorMeetings.typeId, meeting: instructorMeetings.meeting})
-CREATE (instructor)-[:TEACHES]->(meeting)
 
 // Course -> GenEd
 :auto USING PERIODIC COMMIT 100
