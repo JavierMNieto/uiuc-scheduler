@@ -1,10 +1,6 @@
 // Initial import of catalog data into Neo4j
 
-// Delete any previous data
-MATCH (n)-[r]-()
-DELETE n, r
-
-/* -------- Nodes -------- */
+// -------- Nodes -------- //
 
 // Colleges
 LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/college_nodes.csv" as collegeProperties
@@ -22,6 +18,17 @@ LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-sch
 CREATE (course:Course)
 SET course += courseProperties
 SET course.number = toInteger(course.number)
+
+// Instructors
+:auto USING PERIODIC COMMIT 1000
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/instructor_nodes.csv" as instructorProperties
+CREATE (instructor:Instructor)
+SET instructor += instructorProperties
+
+// Gen Eds
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/gen_ed_nodes.csv" as genEdProperties
+CREATE (genEd:GenEd)
+SET genEd += genEdProperties
 
 // Sections
 :auto USING PERIODIC COMMIT 1000
@@ -45,72 +52,34 @@ SET section.`D` = toInteger(section.`D`)
 SET section.`D-` = toInteger(section.`D-`)
 SET section.`F` = toInteger(section.`F`)
 
-// Meetings
-:auto USING PERIODIC COMMIT 1000
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/meeting_nodes.csv" as meetingProperties
-CREATE (meeting:Meeting)
-SET meeting += meetingProperties
-
-// Instructors
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/instructor_nodes.csv" as instructorProperties
-CREATE (instructor:Instructor)
-SET instructor += instructorProperties
-
-// Gen Eds
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/gen_ed_nodes.csv" as genEdProperties
-CREATE (genEd:GenEd)
-SET genEd += genEdProperties
+CREATE INDEX FOR (college:College) ON (college.collegeId)
+CREATE INDEX FOR (subject:Subject) ON (subject.subjectId)
+CREATE INDEX FOR (course:Course) ON (course.courseId)
+CREATE INDEX FOR (section:Section) ON (section.crn, section.year, section.term)
 
 // Sections/Meetings
 :auto USING PERIODIC COMMIT 100
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/sections_meetings.csv" as props
-MERGE (section:Section {crn: toInteger(props.crn),
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/nodes/meeting_nodes.csv" as props
+MATCH (section:Section {crn: toInteger(props.crn),
                         year: toInteger(props.year), 
-                        term: props.term, 
-                        partOfTerm: props.partOfTerm,
-                        section: props.section})
-ON CREATE 
-  SET section += {sectionInfo: props.sectionInfo, 
-                  sectionNotes: props.sectionNotes,
-                  sectionAttributes: props.sectionAttributes,
-                  sectionCappArea: props.sectionCappArea,
-                  sectionCoRequest: props.sectionCoRequest,
-                  sectionSpecialApproval: props.sectionSpecialApproval,
-                  gpa: toFloat(props.gpa),
-                  `A+`: toInteger(props.`A+`),
-                  `A`: toInteger(props.`A`),
-                  `A-`: toInteger(props.`A-`),
-                  `B+`: toInteger(props.`B+`),
-                  `B`: toInteger(props.`B`),
-                  `B-`: toInteger(props.`B-`),
-                  `C+`: toInteger(props.`C+`),
-                  `C`: toInteger(props.`C`),
-                  `C-`: toInteger(props.`C-`),
-                  `D+`: toInteger(props.`D+`),
-                  `D`: toInteger(props.`D`),
-                  `D-`: toInteger(props.`D-`),
-                  `F`: toInteger(props.`F`)}
-<<<<<<< HEAD
-<<<<<<< HEAD
+                        term: props.term})
 CREATE (meeting:Meeting {startDate: props.startDate, 
                         endDate: props.endDate, 
                         startTime: props.startTime, 
                         endTime: props.endTime, 
                         typeId: props.typeId,
                         meeting: props.meeting,
-                        name: props.name})
-CREATE (section)-[:HAS_MEETING]->(meeting)
-=======
-=======
->>>>>>> 8817a7940b340a19b00d25e011cca03ad83c79ab
-MERGE (meeting:Meeting {})
-ON CREATE 
-  CREATE (section)-[:HAS_MEETING]->(meeting)
-MERGE (instructor:Instructor {name: props.instructor})
+                        name: props.name,
+                        days: props.days})
+UNWIND split(row.instructor, ':') AS instructor
+MERGE (instructor:Instructor {name: instructor})
 CREATE (instructor)-[:TEACHES]->(meeting)
->>>>>>> 8817a7940b340a19b00d25e011cca03ad83c79ab
+CREATE (section)-[:HAS_MEETING]->(meeting)
+WHERE props.building IS NOT NULL
+MERGE (building:Building {name: props.building})
+CREATE (meeting)-[:LOCATED_IN {room: props.room}]->(building)
 
-/* -------- Relationships -------- */
+// -------- Relationships -------- //
 
 // College -> Subject
 LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/relationships/college_to_subjects.csv" as collegeSubjects
@@ -129,16 +98,9 @@ CREATE (subject)-[:HAS_COURSE]->(course)
 :auto USING PERIODIC COMMIT 100
 LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/relationships/courses_to_sections.csv" as courseSections
 MATCH (course:Course {courseId: courseSections.courseId})
-// MATCH (section:Section {crn: courseSections.crn})
-MATCH (section:Section {sectionId: courseSections.sectionId})
+MATCH (section:Section {crn: toInteger(courseSections.crn), year: toInteger(courseSections.year), term: courseSections.term})
+//MATCH (section:Section {sectionId: courseSections.sectionId})
 CREATE (course)-[:HAS_SECTION]->(section)
-
-// Section -> Meeting
-:auto USING PERIODIC COMMIT 100
-LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/AIDA-UIUC/uiuc-scheduler/master/data/neo4j/relationships/sections_to_meetings.csv" as sectionMeetings
-MATCH (section:Section {sectionId: sectionMeetings.sectionId})
-MATCH (meeting:Meeting {meetingId: sectionMeetings.meetingId})
-CREATE (section)-[:HAS_MEETING]->(meeting)
 
 // Instructor -> Meeting
 :auto USING PERIODIC COMMIT 100
