@@ -7,5 +7,6 @@ export default makeAugmentedSchema({
   resolvers,
   config: {
     mutation: false,
+    debug: true,
   },
 });

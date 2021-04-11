@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CouseInfoModal({ open, handleClose, ...courseProps }) {
   const classes = useStyles();
   const fullScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const { subject, number, creditHours, description } = courseProps;
+  const { courseId, creditHours, description } = courseProps;
 
   return (
     <Dialog
@@ -31,7 +31,7 @@ export default function CouseInfoModal({ open, handleClose, ...courseProps }) {
       onClose={handleClose}
       aria-labelledby="course-info-modal"
     >
-      <DialogTitle id="course-info-modal-title">{`${subject} ${number}`}</DialogTitle>
+      <DialogTitle id="course-info-modal-title">{courseId}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <DialogContentText>{creditHours}</DialogContentText>
         <DialogContentText>{description}</DialogContentText>

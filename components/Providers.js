@@ -6,29 +6,17 @@ import MomentUtils from "@date-io/moment";
 import useDarkMode from "use-dark-mode";
 import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "../apollo/client";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { lightTheme, darkTheme } from "../lib/Theme";
 import { SemestersProvider } from "./Semesters";
 import { WorkspaceProvider } from "./Workspace";
 
-export default function Providers({ children }) {
+export default function Providers({ pageProps, children }) {
   const { value: isDark } = useDarkMode(false, {
     storageKey: null,
     onChange: null,
   });
   const apolloClient = useApollo(pageProps.initialApolloState);
   const theme = isDark ? darkTheme : lightTheme;
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        refetchInterval: Infinity,
-        staleTime: Infinity,
-        refetchOnReconnect: false,
-        cacheTime: Infinity,
-      },
-    },
-  });
 
   /*
   const [mounted, setMounted] = React.useState(false);
@@ -54,7 +42,6 @@ export default function Providers({ children }) {
     <ApolloProvider client={apolloClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <QueryClientProvider client={queryClient}>
           <SemestersProvider>
             <WorkspaceProvider>
               <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -62,7 +49,6 @@ export default function Providers({ children }) {
               </MuiPickersUtilsProvider>
             </WorkspaceProvider>
           </SemestersProvider>
-        </QueryClientProvider>
       </ThemeProvider>
     </ApolloProvider>
   );

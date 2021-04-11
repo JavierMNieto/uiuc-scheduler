@@ -151,7 +151,7 @@ const reducer = (state, action) => {
         state.semesters[semester].courses.map((course) => course.color)
       ),
       id: state.semesters[semester].courses.length,
-      title: `${course.subject} ${course.number}`,
+      title: course.courseId,
       allDay: !course.days || course.days.trim() === "",
     };
 

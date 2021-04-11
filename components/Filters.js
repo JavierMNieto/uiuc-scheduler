@@ -76,7 +76,10 @@ export default function Filters({ setSearchFilters }) {
   const handleSearch = (event) => {
     event.preventDefault();
     setExpanded(false);
-    setSearchFilters(filters);
+    setSearchFilters({
+      ...filters,
+      year: filters.year.map((year) => parseInt(year))
+    });
   };
 
   const showClearFilters = React.useCallback(() => {
