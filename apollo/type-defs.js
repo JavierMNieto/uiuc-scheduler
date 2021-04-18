@@ -33,7 +33,7 @@ export default gql`
         statement: """
         MATCH (this)-[:HAS_SECTION]->(section:Section)
         WITH DISTINCT section.gpa as gpa
-        RETURN avg(gpa)
+        RETURN round(avg(gpa), 2)
         """
       )
     semesters: JSON!
@@ -76,6 +76,11 @@ export default gql`
     crn: Int!
     partOfTerm: String
     gpa: Float
+      @cypher(
+        statement: """
+        RETURN round(this.gpa, 2)
+        """
+      )
     totalStudents: Int
       @cypher(
         statement: """

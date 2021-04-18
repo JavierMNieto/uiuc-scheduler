@@ -135,15 +135,7 @@ export default withWidth()(function App({
   );
   const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(tab);
-
-  React.useEffect(() => {
-    for (let i = 0; i < routes.length; i++) {
-      if (i !== tab) {
-        router.prefetch(routes[i]);
-      }
-    }
-  }, []);
-
+  
   React.useEffect(() => {
     setTabValue(tab);
   }, [tab]);

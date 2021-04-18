@@ -7,6 +7,6 @@ export default makeAugmentedSchema({
   resolvers,
   config: {
     mutation: false,
-    debug: true,
+    debug: process.env.NODE_ENV === "development",
   },
 });

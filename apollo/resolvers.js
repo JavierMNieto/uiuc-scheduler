@@ -145,8 +145,6 @@ export default {
         ...filters
       } = args;
 
-      console.log(args);
-
       let [query, queryParams] = cypherQuery(args, context, resolveInfo);
 
       // Remove default match, if searchString exists then remove orderBy statement
@@ -177,7 +175,6 @@ export default {
       matches += courseMeetingFilters(sectionMatches !== "", filters);
 
       query = matches + query;
-      console.log(query);
 
       let session = context.driver.session();
 

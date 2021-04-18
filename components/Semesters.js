@@ -1,5 +1,4 @@
 import { createContext, useContext, useReducer } from "react";
-import moment from "moment";
 import { YearTerms } from "../lib/Data";
 import { getRandomAppointmentColor, getrRuleDays } from "../lib/Utils";
 import {
@@ -11,50 +10,20 @@ import {
 const curYear = parseInt(Object.keys(YearTerms).slice(-1)[0]);
 const curTerm = YearTerms[curYear].slice(-1)[0];
 
-const defaultSchedulerProps = (year, term) => {
-  let startDate, endDate, numMonths;
-  if (term === "Winter") {
-    startDate = "12-20";
-    endDate = "01-20";
-    numMonths = 2;
-  } else if (term === "Spring") {
-    startDate = "01-20";
-    endDate = "05-07";
-    numMonths = 5;
-  } else if (term === "Summer") {
-    startDate = "05-07";
-    endDate = "08-07";
-    numMonths = 4;
-  } else {
-    startDate = "08-07";
-    endDate = "12-20";
-    numMonths = 5;
-  }
-  return {
-    startDate: moment(`${year}-${startDate}Z`, courseDateFormat),
-    endDate: moment(`${year}-${endDate}Z`, courseDateFormat),
+const getSemester = () => ({
+  schedulerProps: {
     startHour: 5,
     endHour: 18,
     excludedDays: [0, 6],
-    numMonths: numMonths,
-  };
-};
-
-const getSemester = (year, term) => {
-  return {
-    schedulerProps: defaultSchedulerProps(year, term),
-    courses: [],
-  };
-};
+  },
+  courses: [],
+});
 
 export const isFutureSemester = (semester) => {
   if (!/\d{4}\s(Winter|Spring|Summer|Fall)/.test(semester)) {
     return false;
   }
-  const latestEndDate = getSemester(curYear, curTerm).schedulerProps.endDate;
-  const [year, term] = semester.split(" ");
-  const startDate = getSemester(year, term).schedulerProps.startDate;
-  return moment(startDate).isAfter(latestEndDate);
+  return false;
 };
 
 const defaultSemesters = () => {
@@ -65,49 +34,6 @@ const defaultSemesters = () => {
     }
   }
   return semesters;
-};
-
-const schedulerProps = (semesterKey, courses) => {
-  const [year, term] = semesterKey.split(" ");
-  let props = defaultSchedulerProps(year, term);
-  for (let i = 0; i < courses.length; i++) {
-    const { start_date, end_date, start_time, end_time, rRule = "" } = courses[
-      i
-    ];
-    if (
-      start_date &&
-      (i === 0 || moment(start_date, courseDateFormat).isBefore(props.startDate))
-    ) {
-      props.startDate = moment(start_date, courseDateFormat);
-    }
-    if (
-      end_date &&
-      (i === 0 || moment(end_date, courseDateFormat).isAfter(props.endDate))
-    ) {
-      props.endDate = moment(end_date, courseDateFormat);
-    }
-    if (end_time) {
-      const start_hour = moment(
-        `${start_time} ${start_date} ${courseTimeZone}`,
-        `${courseTimeFormat} ${courseDateFormat} Z`
-      ).hour();
-      const end_hour = moment(
-        `${end_time} ${end_date} ${courseTimeZone}`,
-        `${courseTimeFormat} ${courseDateFormat} Z`
-      ).hour();
-
-      if (start_hour < props.startHour) {
-        props.startHour = Math.max(start_hour - 1, 0);
-      }
-      if (end_hour > props.endHour) {
-        props.endHour = Math.min(end_hour + 1, 24);
-      }
-    }
-    if (rRule.includes("SU,") || rRule.includes("SA,")) {
-      props.excludedDays = [];
-    }
-  }
-  return props;
 };
 
 const reducer = (state, action) => {
@@ -150,7 +76,7 @@ const reducer = (state, action) => {
       color: getRandomAppointmentColor(
         state.semesters[semester].courses.map((course) => course.color)
       ),
-      id: state.semesters[semester].courses.length,
+      id: course.courseId + course.crn + course.type,
       title: course.courseId,
       allDay: !course.days || course.days.trim() === "",
     };
@@ -158,33 +84,31 @@ const reducer = (state, action) => {
     if (course.allDay) {
       state.semesters[semester].courses.push({
         ...appointmentCourse,
-        startDate: course.start_date,
-        endDate: course.end_date,
+        startDate: course.startDate,
+        endDate: course.endDate,
       });
     } else {
+      const endDate = new Date(
+        `${course.endTime} ${course.startDate} ${courseTimeZone}`
+      );
+      endDate.setFullYear(2050);
       state.semesters[semester].courses.push({
         ...appointmentCourse,
-        startDate: moment(
-          `${course.start_time} ${course.start_date} ${courseTimeZone}`,
-          `${courseTimeFormat} ${courseDateFormat} Z`
+        startDate: new Date(
+          `${course.startTime} ${course.startDate} ${courseTimeZone}`
         ),
-        endDate: moment(
-          `${course.end_time} ${course.start_date} ${courseTimeZone}`,
-          `${courseTimeFormat} ${courseDateFormat} Z`
+        endDate: new Date(
+          `${course.endTime} ${course.startDate} ${courseTimeZone}`
         ),
-        rRule: `RRULE:INTERVAL=1;FREQ=WEEKLY;BYDAY=${getrRuleDays(
+        rRule: `INTERVAL=1;FREQ=WEEKLY;BYDAY=${getrRuleDays(
           course.days
-        )};UNTIL=${moment(
-          `${course.end_time} ${course.end_date} ${courseTimeZone}`,
-          `${courseTimeFormat} ${courseDateFormat} Z`
-        ).format("YYYYMMDDTHHmmss")}Z`,
+        )};UNTIL=${endDate
+          .toISOString()
+          .replaceAll("-", "")
+          .replaceAll(":", "")
+          .replace(".000", "")}`,
       });
     }
-
-    state.semesters[semester].schedulerProps = schedulerProps(
-      semester,
-      state.semesters[semester].courses
-    );
   } else if (action.type === "EDIT_COURSE") {
     const { course: newCourse } = action;
 
@@ -205,10 +129,6 @@ const reducer = (state, action) => {
       return state;
     }
     state.semesters[semester].courses.splice(index, 1);
-    state.semesters[semester].schedulerProps = schedulerProps(
-      semester,
-      state.semesters[semester].courses
-    );
   } else if (action.type === "ADD_SEMESTER") {
     if (!state.semesters[semester]) {
       state.semesters[semester] = getSemester(semester);

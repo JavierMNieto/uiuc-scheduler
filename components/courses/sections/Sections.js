@@ -293,6 +293,7 @@ const GET_SECTIONS = gql`
         Section_Capp_Area: sectionCappArea
         Section_Co_Request: sectionCoRequest
         Section_Special_Approval: sectionSpecialApproval
+        GPA: gpa
         meetings {
           name
           days
@@ -324,7 +325,7 @@ export default function Sections({ handleClose, ...courseProps }) {
   const [expandedRowIds, setExpandedRowIds] = React.useState([]);
   const fullScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const { loading, error, data } = useQuery(GET_SECTIONS, {
-    variables: { course: courseId, year: year, term: term },
+    variables: { course: courseId, year: parseInt(year), term: term },
   });
 
   React.useEffect(() => {
@@ -355,15 +356,15 @@ export default function Sections({ handleClose, ...courseProps }) {
           crn: row.crn,
           section: row.section,
           type: meeting.name,
-          start_time: meeting.startTime,
-          end_time: meeting.endTime,
+          startTime: meeting.startTime,
+          endTime: meeting.endTime,
           days: meeting.days,
           instructors: meeting.instructors.map(({ name }) => name),
           room: meeting.location ? meeting.location.room : "",
           building: meeting.location ? meeting.location.Building.name : "",
           allDay: meeting.endTime === null,
-          start_date: meeting.startDate,
-          end_date: meeting.endDate,
+          startDate: meeting.startDate,
+          endDate: meeting.endDate,
         },
       });
     }

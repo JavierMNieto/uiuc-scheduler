@@ -1,9 +1,6 @@
 import React from "react";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
-import useDarkMode from "use-dark-mode";
 import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "../apollo/client";
 import { lightTheme, darkTheme } from "../lib/Theme";
@@ -11,20 +8,25 @@ import { SemestersProvider } from "./Semesters";
 import { WorkspaceProvider } from "./Workspace";
 
 export default function Providers({ pageProps, children }) {
+  /*
   const { value: isDark } = useDarkMode(false, {
     storageKey: null,
     onChange: null,
   });
+  */
+  const [mounted, setMounted] = React.useState(false);
+  const isDark =
+    mounted &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
   const apolloClient = useApollo(pageProps.initialApolloState);
   const theme = isDark ? darkTheme : lightTheme;
-
-  /*
-  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
+  /*
   const body = (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -42,13 +44,9 @@ export default function Providers({ pageProps, children }) {
     <ApolloProvider client={apolloClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-          <SemestersProvider>
-            <WorkspaceProvider>
-              <MuiPickersUtilsProvider utils={MomentUtils}>
-                {children}
-              </MuiPickersUtilsProvider>
-            </WorkspaceProvider>
-          </SemestersProvider>
+        <SemestersProvider>
+          <WorkspaceProvider>{children}</WorkspaceProvider>
+        </SemestersProvider>
       </ThemeProvider>
     </ApolloProvider>
   );

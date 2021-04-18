@@ -1,4 +1,5 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -12,10 +13,9 @@ import AddIcon from "@material-ui/icons/AddCircle";
 
 import { DRAWER_WIDTH } from "../../lib/Constants";
 import { FILTER_COLORS } from "../../lib/Theme";
-import { GenEds } from "../../lib/Data";
 
 import OverflowTipChip from "../OverflowTipChip";
-import CourseInfoModal from "./CourseInfoModal";
+const CourseInfoModal = dynamic(() => import("./CourseInfoModal"));
 //import CourseAddModal from "./CourseAddModal";
 
 import {

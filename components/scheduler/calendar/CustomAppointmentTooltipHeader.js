@@ -5,6 +5,7 @@ import ListIcon from "@material-ui/icons/List";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 export default function CustomAppointmentTooltip({
+  onDeleteButtonClick,
   appointmentData: course,
   editCourse,
   deleteCourse
