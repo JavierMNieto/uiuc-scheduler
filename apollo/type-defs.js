@@ -104,13 +104,11 @@ export default gql`
 
   type Year {
     name: Int!
-    sections: [Section!]! @relation(name: "DURING_YEAR", direction: IN)
     terms: [Term!]! @relation(name: "HAS_TERM", direction: OUT)
   }
 
   type Term {
     name: ID!
-    sections: [Section!]! @relation(name: "DURING_TERM", direction: IN)
     year: [Year!]! @relation(name: "HAS_TERM", direction: IN)
     partOfTerms: [PartOfTerm!]!
       @relation(name: "HAS_PARTOFTERM", direction: OUT)
@@ -119,7 +117,6 @@ export default gql`
   type PartOfTerm {
     partOfTermId: ID!
     name: String
-    sections: [Section!]! @relation(name: "DURING_PARTOFTERM", direction: OUT)
     term: [Term!]! @relation(name: "HAS_PARTOFTERM", direction: IN)
   }
 
