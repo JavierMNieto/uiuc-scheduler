@@ -1,12 +1,32 @@
 import React from "react";
+import { gql, useLazyQuery } from "@apollo/client";
 import TextField from "@material-ui/core/TextField";
-import { matchSorter } from "match-sorter";
 import Chip from "@material-ui/core/Chip";
 import Tooltip from "@material-ui/core/Tooltip";
-import OverflowTipChip from "../OverflowTipChip";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
+import OverflowTipChip from "../OverflowTipChip";
 import { CollegeSubject as CollegeSubjectAutocomplete } from "./Autocompletes";
-import { Colleges, Subjects, CollegeSubjects } from "../../lib/Data";
+import { Colleges, CollegeSubjects } from "../../lib/Data";
+
+const SEARCH_SUBJECTS = gql`
+  query SearchSubjects(
+    $search: String!
+    $colleges: [String!]
+    $skip: Int
+    $limit: Int
+  ) {
+    searchSubjects(
+      searchString: $search
+      colleges: $colleges
+      offset: $skip
+      first: $limit
+    ) {
+      subjectId
+      name
+    }
+  }
+`;
 
 const getValidSubjects = (colleges) => {
   colleges = colleges.length === 0 ? Object.keys(Colleges) : colleges;
@@ -14,8 +34,8 @@ const getValidSubjects = (colleges) => {
   for (let college of colleges) {
     validSubjects = validSubjects.concat(CollegeSubjects[college]);
   }
-  return validSubjects.sort((a, b) => a.localeCompare(b));
-}
+  return validSubjects;
+};
 
 export default function CollegeSubject({
   colleges,
@@ -23,7 +43,31 @@ export default function CollegeSubject({
   onChange,
   lastFilterChange,
 }) {
-  let validSubjects = getValidSubjects(colleges);
+  const [subjectInputValue, setSubjectInputValue] = React.useState("");
+  const [subjectValueNames, setSubjectValueNames] = React.useState({});
+  const [searchSubjects, { loading, data: subjectData }] = useLazyQuery(
+    SEARCH_SUBJECTS
+  );
+
+  const getSubjects = React.useCallback(() => {
+    if (subjectData && subjectInputValue !== "") {
+      return subjectData.searchSubjects.reduce(
+        (prev, subject) => ({
+          ...prev,
+          [subject.subjectId]: subject.name,
+        }),
+        {}
+      );
+    }
+    return [];
+  }, [subjectData]);
+
+  const handleSubjectInputChange = (event, newInputValue) => {
+    setSubjectInputValue(newInputValue);
+    searchSubjects({
+      variables: { search: newInputValue, colleges: colleges },
+    });
+  };
 
   const handleCollegesChange = (event, value) => {
     onChange({
@@ -34,14 +78,13 @@ export default function CollegeSubject({
     });
   };
 
-  const filterOptions = (options, { inputValue }) =>
-    matchSorter(
-      options.map((key) => {
-        return { value: key, label: Subjects[key] };
-      }),
-      inputValue,
-      { keys: ["value", "label"] }
-    ).map((option) => option.value);
+  const handleSubjectsChange = (event, value) => {
+    setSubjectValueNames({
+      ...subjectValueNames,
+      [value]: getSubjects()[value],
+    });
+    onChange({ subject: value });
+  };
 
   return (
     <React.Fragment>
@@ -69,31 +112,53 @@ export default function CollegeSubject({
       />
       <CollegeSubjectAutocomplete
         multiple
+        onInputChange={handleSubjectInputChange}
+        inputValue={subjectInputValue}
         disableCloseOnSelect={lastFilterChange === "subject"}
         limitTags={2}
-        options={validSubjects}
+        options={Object.keys(getSubjects())}
+        filterOptions={(subject) => subject}
         filterSelectedOptions
-        getOptionLabel={(subject) => Subjects[subject]}
+        getOptionLabel={(subject) => getSubjects()[subject]}
         value={subjects}
-        filterOptions={filterOptions}
-        onChange={(e, value) => onChange({ subject: value })}
+        loading={loading}
+        noOptionsText={
+          subjectInputValue ? "No subjects" : "Search for subjects"
+        }
+        onChange={handleSubjectsChange}
         renderTags={(value, getTagProps) =>
           value.map((subject, index) => (
             <Tooltip
               placement="top"
               arrow
               key={subject}
-              title={<span style={{ fontSize: 11 }}>{Subjects[subject]}</span>}
+              title={
+                <span style={{ fontSize: 11 }}>
+                  {subjectValueNames[subject]}
+                </span>
+              }
             >
-              <Chip
-                {...getTagProps({ index })}
-                label={subject}
-              />
+              <Chip {...getTagProps({ index })} label={subject} />
             </Tooltip>
           ))
         }
         renderInput={(params) => (
-          <TextField {...params} label="Subject(s)" placeholder="Subject" />
+          <TextField
+            {...params}
+            label="Subject(s)"
+            placeholder="Subject"
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {loading ? (
+                    <CircularProgress color="secondary" size={20} />
+                  ) : null}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
         )}
       />
     </React.Fragment>

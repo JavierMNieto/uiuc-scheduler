@@ -1,6 +1,6 @@
 import React from "react";
-import axios from "axios";
 import moment from "moment";
+import { gql, useQuery } from "@apollo/client";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Table from "@material-ui/core/Table";
@@ -15,7 +15,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
-import { useQuery } from "react-query";
 import {
   FilteringState,
   IntegratedFiltering,
@@ -44,25 +43,30 @@ import { useSemesters, useDispatchSemesters } from "../../Semesters";
 
 import { courseTimeFormat, courseTimeZone } from "../../../lib/Constants";
 
+const getMeetingValue = (row, column, index = 0) =>
+  row.meetings[index][column] || "N/A";
+
 const getTimeValue = (row, column, index = 0) =>
-  row.end_time[index]
-    ? `${row.start_time[index]} - ${row.end_time[index]}`
+  row.meetings[index].endTime
+    ? `${row.meetings[index].startTime} - ${row.meetings[index].endTime}`
     : "Asychronous";
 
 const getLocationValue = (row, column, index = 0) =>
-  row.building[index] ? `#${row.room[index]} ${row.building[index]}` : "N/A";
-
-const compareArrValue = (a, b) => a[0].localeCompare(b[0]);
+  row.meetings[index].location
+    ? `#${row.meetings[index].location.room} ${row.meetings[index].location.Building.name}`
+    : "N/A";
 
 const columns = [
   { name: "crn", title: "CRN" },
   {
     name: "section",
     title: "Section",
+    getCellValue: (row) => row.section,
   },
   {
-    name: "type",
+    name: "name",
     title: "Type",
+    getCellValue: getMeetingValue,
   },
   {
     name: "time",
@@ -72,6 +76,7 @@ const columns = [
   {
     name: "days",
     title: "Days",
+    getCellValue: getMeetingValue,
   },
   {
     name: "location",
@@ -79,7 +84,7 @@ const columns = [
     getCellValue: getLocationValue,
   },
   {
-    name: "instructor",
+    name: "instructors",
     title: "Instructor(s)",
   },
 ];
@@ -91,7 +96,7 @@ const filteringColumnExtensions = [
       if (filter.value === "") {
         return true;
       }
-      return row.type.indexOf(filter.value) >= 0;
+      return row.meetings.some(({ name: type }) => type === value);
     },
   },
   {
@@ -100,7 +105,7 @@ const filteringColumnExtensions = [
       if (filter.value === "") {
         return true;
       }
-      const times = row.end_time.map((end_time, index) =>
+      const times = row.meetings.map(({ endTime }, index) =>
         getTimeValue(row, index)
       );
       return times.indexOf(filter.value) >= 0;
@@ -112,7 +117,7 @@ const filteringColumnExtensions = [
       if (filter.value === "") {
         return true;
       }
-      return row.days.indexOf(filter.value) >= 0;
+      return row.meetings.some(({ days }) => days === value);
     },
   },
   {
@@ -121,19 +126,21 @@ const filteringColumnExtensions = [
       if (filter.value === "") {
         return true;
       }
-      const locations = row.room.map((room, index) =>
+      const locations = row.meetings.map(({ location }, index) =>
         getLocationValue(row, index)
       );
       return locations.indexOf(filter.value) >= 0;
     },
   },
   {
-    columnName: "instructor",
+    columnName: "instructors",
     predicate: (value, filter, row) => {
       if (filter.value.length === 0) {
         return true;
       }
-      const instructors = row.instructor.flat();
+      const instructors = row.meetings
+        .map(({ instructors }) => instructors.map(({ name }) => name))
+        .flat(2);
       return filter.value.some(
         (filterInstructor) => instructors.indexOf(filterInstructor) >= 0
       );
@@ -148,11 +155,9 @@ const filteringStateColumnExtensions = [
 const sortingStateColumnExtensions = [
   {
     columnName: "section",
-    compare: compareArrValue,
   },
   {
-    columnName: "type",
-    compare: compareArrValue,
+    columnName: "name",
   },
   {
     columnName: "time",
@@ -170,32 +175,29 @@ const sortingStateColumnExtensions = [
   },
   {
     columnName: "days",
-    compare: compareArrValue,
   },
   {
     columnName: "location",
-    compare: compareArrValue,
   },
   {
-    columnName: "instructor",
-    compare: (a, b) => compareArrValue(a[0], b[0]),
+    columnName: "instructors",
   },
 ];
 
 const defaultColumnWidths = [
   { columnName: "crn", width: 80 },
   { columnName: "section", width: 100 },
-  { columnName: "type", width: 150 },
+  { columnName: "name", width: 150 },
   { columnName: "time", width: 200 },
   { columnName: "days", width: 175 },
   { columnName: "location", width: 200 },
-  { columnName: "instructor", width: 200 },
+  { columnName: "instructors", width: 200 },
 ];
 
 const RowDetail = ({ row }) => {
-  row["Date Range"] = row["Start Date"]
-    ? `${row["Start Date"]} - ${row["End Date"]}`
-    : null;
+  //row["Date Range"] = row["Start Date"]
+  //  ? `${row["Start Date"]} - ${row["End Date"]}`
+  //  : null;
   let validDetails = Object.keys(row).filter(
     (detail) => /^[A-Z]/.test(detail) && row[detail]
   );
@@ -206,7 +208,7 @@ const RowDetail = ({ row }) => {
         {validDetails.map((detail) => (
           <TableRow key={detail}>
             <TableCell style={{ width: "15%" }} variant="head" component="th">
-              {detail}
+              {detail.replaceAll("_", " ")}
             </TableCell>
             <TableCell align="left">{row[detail]}</TableCell>
           </TableRow>
@@ -218,15 +220,12 @@ const RowDetail = ({ row }) => {
 
 const meetingMarginTop = (row, index) => {
   if (index === 0) return 0;
-  return row.instructor[index - 1].length * 32 + 4;
+  return row.meetings[index - 1].instructors.length * 32 + 4;
 };
 
 const cellComponent = ({
   colSpan,
-  column: {
-    name,
-    getCellValue = (row, index = 0) => row[name][index] || "N/A",
-  },
+  column: { name: columnName, getCellValue = (row) => row[name] || "N/A" },
   row,
   tableColumn,
   tableRow,
@@ -234,15 +233,15 @@ const cellComponent = ({
 }) => {
   let body = value;
 
-  if (name === "instructor") {
+  if (columnName === "instructors") {
     body = (
       <React.Fragment>
-        {row.instructor.map((instructors, index) => (
+        {row.meetings.map(({ instructors }, index) => (
           <div
             key={JSON.stringify(instructors) + index}
             style={{ marginTop: meetingMarginTop(row, index) / 2 }}
           >
-            {instructors.map((instructor, index) => (
+            {instructors.map(({ name: instructor }, index) => (
               <React.Fragment key={instructor + index}>
                 {Boolean(instructor) && (
                   <div>
@@ -255,15 +254,15 @@ const cellComponent = ({
         ))}
       </React.Fragment>
     );
-  } else if (name !== "crn") {
+  } else if (columnName !== "crn") {
     body = (
       <React.Fragment>
-        {row.section.map((section, index) => (
+        {row.meetings.map((meeting, index) => (
           <div
-            key={JSON.stringify(section) + index}
+            key={JSON.stringify(meeting) + index}
             style={{ marginTop: meetingMarginTop(row, index) }}
           >
-            {getCellValue(row, (index = index))}
+            {getCellValue(row, columnName, index)}
           </div>
         ))}
       </React.Fragment>
@@ -281,28 +280,53 @@ const cellComponent = ({
   );
 };
 
+const GET_SECTIONS = gql`
+  query GetSections($course: ID!, $year: Int!, $term: String!) {
+    Course(filter: { courseId: $course }) {
+      sections(filter: { year: $year, term: $term }) {
+        crn
+        section
+        Part_Of_Term: partOfTerm
+        Section_Info: sectionInfo
+        Section_Notes: sectionNotes
+        Section_Attributes: sectionAttributes
+        Section_Capp_Area: sectionCappArea
+        Section_Co_Request: sectionCoRequest
+        Section_Special_Approval: sectionSpecialApproval
+        GPA: gpa
+        meetings {
+          name
+          days
+          startDate
+          endDate
+          startTime
+          endTime
+          location {
+            room
+            Building {
+              name
+            }
+          }
+          instructors {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 export default function Sections({ handleClose, ...courseProps }) {
-  const { subject, number, semesters, name, filters = {} } = courseProps;
-  const course = `${subject} ${number}`;
+  const { courseId, semesters, name, filters = {} } = courseProps;
   const { selectedSemester } = useSemesters();
   const dispatch = useDispatchSemesters();
   const [year, setYear] = React.useState(semesters[0][0]);
   const [term, setTerm] = React.useState(semesters[0][1]);
   const [expandedRowIds, setExpandedRowIds] = React.useState([]);
   const fullScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const { status, data: sections = [], error, isFetching } = useQuery(
-    ["sections", course, year, term],
-    async ({ queryKey: [, course, year, term] }) => {
-      const response = await axios.get("/api/sections", {
-        params: {
-          course: course,
-          year: year,
-          term: term,
-        },
-      });
-      return response.data;
-    }
-  );
+  const { loading, error, data } = useQuery(GET_SECTIONS, {
+    variables: { course: courseId, year: parseInt(year), term: term },
+  });
 
   React.useEffect(() => {
     const [selectedYear, selectedTerm] = selectedSemester.split(" ");
@@ -320,24 +344,27 @@ export default function Sections({ handleClose, ...courseProps }) {
     }
   }, [year, term]);
 
+  const getSections = () => (data ? data.Course[0].sections : []);
+
   const handleAddCourse = (row) => {
-    for (let i = 0; i < row.section.length; i++) {
+    for (const meeting of row.meetings) {
       dispatch({
         type: "ADD_COURSE",
         semester: `${year} ${term}`,
         course: {
           ...courseProps,
           crn: row.crn,
-          type: row.type[i],
-          start_time: row.start_time[i],
-          end_time: row.end_time[i],
-          days: row.days[i],
-          instructors: row.instructor[i],
-          room: row.room[i],
-          building: row.building[i],
-          allDay: row.end_time[i] === null,
-          start_date: row.start_date,
-          end_date: row.end_date,
+          section: row.section,
+          type: meeting.name,
+          startTime: meeting.startTime,
+          endTime: meeting.endTime,
+          days: meeting.days,
+          instructors: meeting.instructors.map(({ name }) => name),
+          room: meeting.location ? meeting.location.room : "",
+          building: meeting.location ? meeting.location.Building.name : "",
+          allDay: meeting.endTime === null,
+          startDate: meeting.startDate,
+          endDate: meeting.endDate,
         },
       });
     }
@@ -350,7 +377,7 @@ export default function Sections({ handleClose, ...courseProps }) {
         colSpan={columns.length + 2}
         style={{ textAlign: "center", verticalAlign: "middle" }}
       >
-        {isFetching ? (
+        {loading ? (
           <LinearProgress color="secondary" />
         ) : status === "error" ? (
           <p>Error: {error.message}</p>
@@ -359,98 +386,110 @@ export default function Sections({ handleClose, ...courseProps }) {
         )}
       </td>
     ),
-    [isFetching, status]
+    [loading, status]
   );
 
   const FilterCell = React.useCallback(
     ({
-      column: {
-        name,
-        getCellValue = (row, index = 0) => row[name][index] || "N/A",
-      },
+      column: { name: columnName, getCellValue },
       filter = {},
       filteringEnabled,
       onFilter,
       tableColumn,
       tableRow,
-    }) => (
-      <TableCell style={{ padding: 8 }}>
-        {filteringEnabled ? (
-          name === "instructor" ? (
-            <Instructor
-              multiple
-              limitTags={1}
-              onChange={(e, value) => onFilter({ value: value })}
-              options={[
-                ...new Set(
-                  sections
-                    .map((section) => section.instructor)
-                    .flat(2)
-                    .filter((instructor) => Boolean(instructor))
-                ),
-              ]}
-              value={filter === null ? [] : filter.value || []}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Last, First Initial"
-                  margin="none"
-                />
-              )}
-            />
-          ) : (
-            <Select
-              displayEmpty
-              margin="none"
-              value={filter === null ? "" : filter.value || ""}
-              onChange={(event) => onFilter({ value: event.target.value })}
-              style={{
-                maxWidth: tableColumn.width - 10,
-              }}
-            >
-              <MenuItem value="">
-                <em>All</em>
-              </MenuItem>
-              {[
-                ...new Set(
-                  sections
-                    .map((row) =>
-                      row.section.map((section, index) =>
-                        getCellValue(row, index)
+    }) => {
+      return (
+        <TableCell style={{ padding: 8 }}>
+          {filteringEnabled ? (
+            columnName === "instructors" ? (
+              <Instructor
+                multiple
+                limitTags={1}
+                onChange={(e, value) => onFilter({ value: value })}
+                options={[
+                  ...new Set(
+                    getSections()
+                      .map(({ meetings }) =>
+                        meetings.map(({ instructors }) =>
+                          instructors.map(({ name }) => name)
+                        )
                       )
-                    )
-                    .flat()
-                ),
-              ]
-                .filter((value) => value !== "N/A")
-                .map((value) => (
-                  <MenuItem key={value} value={value}>
-                    {value}
-                  </MenuItem>
-                ))}
-            </Select>
-          )
-        ) : (
-          <React.Fragment />
-        )}
-      </TableCell>
-    ),
-    [sections]
+                      .flat(3)
+                      .filter((instructor) => Boolean(instructor))
+                  ),
+                ]}
+                value={filter === null ? [] : filter.value || []}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Last, First Initial"
+                    margin="none"
+                  />
+                )}
+              />
+            ) : (
+              <Select
+                displayEmpty
+                margin="none"
+                value={filter === null ? "" : filter.value || ""}
+                onChange={(event) => onFilter({ value: event.target.value })}
+                style={{
+                  maxWidth: tableColumn.width - 10,
+                }}
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                {[
+                  ...new Set(
+                    getSections()
+                      .map((row) =>
+                        row.meetings.map((meeting, index) =>
+                          getCellValue(row, columnName, index)
+                        )
+                      )
+                      .flat(2)
+                  ),
+                ]
+                  .filter((value) => value !== "N/A")
+                  .map((value) => (
+                    <MenuItem key={value} value={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+              </Select>
+            )
+          ) : (
+            <React.Fragment />
+          )}
+        </TableCell>
+      );
+    },
+    [getSections()]
   );
 
   return (
-    <Grid rows={sections} columns={columns}>
+    <Grid rows={getSections()} columns={columns}>
       <SearchState />
-      {sections.length > 0 && (
+      {getSections().length > 0 && (
         <FilteringState
           columnExtensions={filteringStateColumnExtensions}
           defaultFilters={[
             {
-              columnName: "instructor",
+              columnName: "instructors",
               value:
-                [...new Set(sections.map((row) => row.instructor))].filter(
-                  (value) => filters.instructor.indexOf(value) > -1
-                ) || [],
+                [
+                  ...new Set(
+                    getSections()
+                      .map(({ meetings }) =>
+                        meetings.map(({ instructors }) =>
+                          instructors.map(({ name }) => name)
+                        )
+                      )
+                      .flat(4)
+                  ),
+                ].filter((value) => filters.instructor.indexOf(value) > -1) ||
+                [],
             },
           ]}
         />
@@ -512,7 +551,9 @@ export default function Sections({ handleClose, ...courseProps }) {
         )}
       />
       <TableColumnVisibility />
-      {sections.length > 0 && <TableFilterRow cellComponent={FilterCell} />}
+      {getSections().length > 0 && (
+        <TableFilterRow cellComponent={FilterCell} />
+      )}
       <Toolbar />
       <SearchPanel />
       <ColumnChooser />

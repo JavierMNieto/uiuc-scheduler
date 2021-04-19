@@ -13,9 +13,9 @@ export default function SearchDrawer({ ...props }) {
 
   return (
     <SwipeableDrawer {...props}>
-      <Filters setSearchFilters={setSearchFilters} />
+      {props.open && <Filters setSearchFilters={setSearchFilters} />}
       <Divider />
-      <SearchCourses filters={searchFilters} />
+      {props.open && <SearchCourses filters={searchFilters} />}
     </SwipeableDrawer>
   );
 }

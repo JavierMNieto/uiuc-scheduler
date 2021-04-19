@@ -1,179 +1,163 @@
 import React from "react";
-import moment from "moment";
-import { ViewState } from "@devexpress/dx-react-scheduler";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Fade from "@material-ui/core/Fade";
+import Typography from "@material-ui/core/Typography";
+import TableCell from "@material-ui/core/TableCell";
+import {
+  EditingState,
+  IntegratedEditing,
+} from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
   Toolbar,
-  DayView,
   WeekView,
-  MonthView,
-  ViewSwitcher,
-  DateNavigator,
   Appointments,
   AppointmentTooltip,
   AllDayPanel,
+  CurrentTimeIndicator,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { makeStyles } from "@material-ui/core/styles";
-import IconButton from "@material-ui/core/IconButton";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
-import CustomDatePicker from "./CustomDatePicker";
+import { useSemesters } from "../../Semesters";
+
 import CustomAppointmentTooltip from "./CustomAppointmentTooltip";
 import CustomAppointmentTooltipHeader from "./CustomAppointmentTooltipHeader";
 
-const useStyles = makeStyles((theme) => ({
-  navigationButton: {
-    position: "absolute",
-    [theme.breakpoints.up("sm")]: {
-      top: 78,
-    },
-    [theme.breakpoints.down("xs")]: {
-      top: 70,
-    },
-    zIndex: 10,
-  },
-}));
-
-export default function CoursesCalendar({
-  height,
-  courses = [],
-  schedulerProps: {
-    startDate,
-    endDate,
-    startHour,
-    endHour,
-    excludedDays,
-    numMonths,
-  },
-  editCourse,
-  deleteCourse,
-}) {
-  const classes = useStyles();
-  const [currentView, setCurrentView] = React.useState("Week");
-  const [currentDate, setCurrentDate] = React.useState(startDate);
+export default function CoursesCalendar({ height, editCourse, deleteCourse }) {
+  const [courses, setCourses] = React.useState([]);
+  const [tooltipVisibility, setTooltipVisibility] = React.useState(false);
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const dayFormatOptions = {
+    weekday: isSmallScreen ? "short" : "long",
+  };
+  const indicatorRef = React.useRef(null);
+  const { selectedSemester, semesters } = useSemesters();
 
   React.useEffect(() => {
-    setCurrentDate((prevCurrent) =>
-      moment(prevCurrent).isBefore(startDate) ? startDate : prevCurrent
-    );
-  }, [startDate]);
+    const newCourses = semesters[selectedSemester].courses;
 
-  const navigationButtonDisabled = (direction) => {
-    if (direction === "back") {
-      return moment(currentDate).subtract(1, currentView).isBefore(startDate);
+    if (courses.length < newCourses.length) {
+      setCourses([
+        ...courses,
+        ...newCourses.filter(
+          (newCourse) =>
+            !courses.some((curCourse) => curCourse.id === newCourse.id)
+        ),
+      ]);
     }
-    return moment(currentDate).add(1, currentView).isAfter(endDate);
+
+    if (courses.length > newCourses.length) {
+      setCourses(
+        courses.filter((curCourse) =>
+          newCourses.some((newCourse) => newCourse.id === curCourse.id)
+        )
+      );
+    }
+  }, [JSON.stringify(semesters[selectedSemester].courses)]);
+
+  React.useEffect(() => {
+    if (indicatorRef) {
+      indicatorRef.current.scrollIntoView({ block: "center" });
+    }
+  }, []);
+
+  const Indicator = (props) => {
+    return (
+      <div ref={indicatorRef}>
+        <CurrentTimeIndicator.Indicator {...props} />
+      </div>
+    );
   };
 
-  const AllDayPanelRow = React.useCallback(
+  const AllDayPanelCell = React.useCallback(
     (props) => (
-      <AllDayPanel.Row
+      <AllDayPanel.Cell
         {...props}
         style={{
+          transitionProperty: "all",
+          transitionTimingFunction: "ease-in-out",
           height:
             Math.min(courses.filter((course) => course.allDay).length, 3) * 48,
         }}
+      ></AllDayPanel.Cell>
+    ),
+    [courses]
+  );
+
+  const AllDayPanelTitleCell = React.useCallback(
+    ({ getMessage }) => (
+      <Fade in={courses.filter((course) => course.allDay).length > 0}>
+        <Typography variant="body2" align="center">
+          {getMessage("allDay")}
+        </Typography>
+      </Fade>
+    ),
+    [courses]
+  );
+
+  const onEditCourse = (course) => {
+    setTooltipVisibility(false);
+    editCourse(course);
+  };
+
+  const onDeleteCourse = (course) => {
+    setTooltipVisibility(false);
+    deleteCourse(course);
+  };
+
+  const Appointment = React.useCallback(
+    (props) => (
+      <Appointments.Appointment
+        {...props}
+        style={{ backgroundColor: props.data.color }}
       />
     ),
     [courses]
   );
 
   return (
-    <Scheduler height={height} data={courses} key={JSON.stringify(courses)}>
-      <ViewState
-        currentDate={currentView === "Semester" ? startDate : currentDate}
-        onCurrentDateChange={setCurrentDate}
-        currentViewName={currentView}
-        onCurrentViewNameChange={setCurrentView}
-      />
-      <DayView name="Day" startDayHour={startHour} endDayHour={endHour} />
+    <Scheduler height={height} data={courses}>
       <WeekView
-        name="Week"
         timeTableCellComponent={(props) => (
           <WeekView.TimeTableCell {...props} style={{ width: 100 }} />
         )}
         dayScaleCellComponent={(props) => (
-          <WeekView.DayScaleCell {...props} style={{ width: 100 }} />
-        )}
-        excludedDays={excludedDays}
-        startDayHour={startHour}
-        endDayHour={endHour}
-      />
-      <MonthView
-        name="Semester"
-        intervalCount={numMonths || 5}
-        timeTableCellComponent={(props) => (
-          <MonthView.TimeTableCell {...props} style={{ width: 100 }} />
-        )}
-        dayScaleCellComponent={(props) => (
-          <MonthView.DayScaleCell {...props} style={{ width: 100 }} />
+          <TableCell component="td" style={{ padding: 8, textAlign: "center" }}>
+            <Typography
+              variant="h5"
+              color={props.today ? "primary" : "textSecondary"}
+            >
+              {new Intl.DateTimeFormat("en-US", dayFormatOptions).format(
+                props.startDate
+              )}
+            </Typography>
+          </TableCell>
         )}
       />
-      {currentView === "Week" && (
-        <AllDayPanel
-          messages={{ allDay: "Async Courses" }}
-          rowComponent={AllDayPanelRow}
-        />
-      )}
+      <AllDayPanel
+        messages={{ allDay: "Async Courses" }}
+        cellComponent={AllDayPanelCell}
+        titleCellComponent={AllDayPanelTitleCell}
+      />
       <Toolbar />
-      <DateNavigator
-        openButtonComponent={() => (
-          <CustomDatePicker
-            currentDate={currentDate}
-            currentView={currentView}
-            setCurrentDate={setCurrentDate}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        )}
-        navigationButtonComponent={({ type, onClick }) => (
-          <React.Fragment>
-            {currentView !== "Semester" && (
-              <div
-                className={classes.navigationButton}
-                style={{ left: type === "back" ? 8 : 38 }}
-              >
-                <IconButton
-                  onClick={onClick}
-                  disabled={navigationButtonDisabled(type)}
-                  size="small"
-                >
-                  {type === "back" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                </IconButton>
-              </div>
-            )}
-          </React.Fragment>
-        )}
-      />
-      <ViewSwitcher />
-      <Appointments
-        appointmentComponent={(props) => (
-          <Appointments.Appointment
-            {...props}
-            style={{ backgroundColor: props.data.color }}
-          />
-        )}
-      />
+      <Appointments appointmentComponent={Appointment} />
       <AppointmentTooltip
         showCloseButton
+        visible={tooltipVisibility}
+        onVisibilityChange={setTooltipVisibility}
         contentComponent={(props) => (
-          <CustomAppointmentTooltip
-            {...props}
-            editCourse={editCourse}
-            deleteCourse={deleteCourse}
-          />
+          <CustomAppointmentTooltip {...props} editCourse={onEditCourse} />
         )}
         headerComponent={(props) => (
           <AppointmentTooltip.Header {...props}>
             <CustomAppointmentTooltipHeader
               {...props}
-              editCourse={editCourse}
-              deleteCourse={deleteCourse}
+              editCourse={onEditCourse}
+              deleteCourse={onDeleteCourse}
             />
           </AppointmentTooltip.Header>
         )}
       />
+      <CurrentTimeIndicator indicatorComponent={Indicator} shadePreviousCells />
     </Scheduler>
   );
 }

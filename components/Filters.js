@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 
 import FormGroup from "@material-ui/core/FormGroup";
 import Collapse from "@material-ui/core/Collapse";
@@ -11,11 +12,11 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ClearIcon from "@material-ui/icons/Clear";
 import Fade from "@material-ui/core/Fade";
 
-import YearTerm from "./filters/YearTerm";
-import CollegeSubject from "./filters/CollegeSubject";
-import Instructor from "./filters/Instructor";
-import GenEd from "./filters/GenEd";
-import SectionAttribute from "./filters/SectionAttribute";
+const YearTerm = dynamic(() => import("./filters/YearTerm"));
+const CollegeSubject = dynamic(() => import("./filters/CollegeSubject"));
+const Instructor = dynamic(() => import("./filters/Instructor"));
+const GenEd = dynamic(() => import("./filters/GenEd"));
+const SectionAttribute = dynamic(() => import("./filters/SectionAttribute"));
 import Search from "./filters/Search";
 
 import { DEFAULT_FILTERS } from "../lib/Constants";
@@ -76,11 +77,17 @@ export default function Filters({ setSearchFilters }) {
   const handleSearch = (event) => {
     event.preventDefault();
     setExpanded(false);
-    setSearchFilters(filters);
+    setSearchFilters({
+      ...filters,
+      year: filters.year.map((year) => parseInt(year)),
+    });
   };
 
   const showClearFilters = React.useCallback(() => {
-    const { search: defaultSearch, ...defaultCollapseFilters } = DEFAULT_FILTERS;
+    const {
+      search: defaultSearch,
+      ...defaultCollapseFilters
+    } = DEFAULT_FILTERS;
     const { search, ...collapseFilters } = filters;
     return (
       JSON.stringify(defaultCollapseFilters) !== JSON.stringify(collapseFilters)

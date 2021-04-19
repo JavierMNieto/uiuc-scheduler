@@ -45,7 +45,7 @@ export default function MyApp({ Component, pageProps }) {
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
       </Head>
-      <Providers>
+      <Providers pageProps={pageProps}>
         <Layout
           hasSearch={Component.hasSearch}
           hasWorkspace={Component.hasWorkspace}
